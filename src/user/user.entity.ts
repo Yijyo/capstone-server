@@ -1,6 +1,8 @@
+import { Query } from '../query/query.entity';
 import {
     Column,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn
 } from 'typeorm';
 
@@ -17,4 +19,7 @@ export class User {
 
     @Column()
     password: string;
+
+    @OneToMany(() => Query, query => query.user)
+    queries: Query[];
 }

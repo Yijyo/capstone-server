@@ -32,5 +32,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         if (!user) throw new Error(`User with email ${email} not found`);
         return user;
     }
-    
 }
