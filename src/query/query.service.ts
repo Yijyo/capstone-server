@@ -17,20 +17,22 @@ export class QueryService {
 
     async createQuery(userEmail: string, requestMessage: string): Promise<Query> {
         try {
+            console.log("username : ", userEmail, ", requestMessage : ", requestMessage);
+            console.log(process.env.AI_SERVER_URL);
             const response = await this.getAIResponse(requestMessage);
             const query = this.queryRepository.create({
                 userEmail: userEmail,
                 requestMessage: requestMessage,
                 responseMessage: response,
             });
-
-        return this.queryRepository.save(query);
+            return this.queryRepository.save(query);
         } catch (error) {
             throw new Error('Failed to create query');
         }   
     }
 
     private async getAIResponse(request: string): Promise<string> {
+        console.log(process.env.AI_SERVER_URL + 'prompt');
         const aiResponse = await firstValueFrom(
             this.httpService.post(
                 process.env.AI_SERVER_URL + 'prompt',
