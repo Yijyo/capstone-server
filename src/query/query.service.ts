@@ -15,14 +15,14 @@ export class QueryService {
         private httpService: HttpService,
     ) {}
 
-    async createQuery(userEmail: string, requestMessage: string): Promise<Query> {
+    async createQuery(userEmail: string, request: string): Promise<Query> {
         try {
-            console.log("username : ", userEmail, ", requestMessage : ", requestMessage);
+            console.log("username : ", userEmail, ", requestMessage : ", request);
             console.log(process.env.AI_SERVER_URL);
-            const response = await this.getAIResponse(requestMessage);
+            const response = await this.getAIResponse(userEmail, request);
             const query = this.queryRepository.create({
                 userEmail: userEmail,
-                requestMessage: requestMessage,
+                requestMessage: request,
                 responseMessage: response,
             });
             return this.queryRepository.save(query);
@@ -31,21 +31,36 @@ export class QueryService {
         }   
     }
 
-    private async getAIResponse(request: string): Promise<string> {
-        console.log(process.env.AI_SERVER_URL + 'prompt');
-        const aiResponse = await firstValueFrom(
-            this.httpService.post(
-                process.env.AI_SERVER_URL + 'prompt',
-                { request },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    timeout : 10000,
-                }
-            )
-        )
-        console.log(aiResponse)
-        return aiResponse.data.message;
+    private async getAIResponse(userEmail: string, request: string): Promise<string> {
+        try {
+            const url = process.env.AI_SERVER_URL + 'prompt';
+            console.log('Sending request to:', url);
+            const requestBody = {
+                userEmail: userEmail,
+                request: request
+            };
+            console.log('Request payload:', requestBody);
+
+            const aiResponse = await firstValueFrom(
+                this.httpService.post(
+                    url,
+                    requestBody,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        timeout: 100000,
+                    }
+                )
+            );
+            console.log('AI Response:', aiResponse);
+            return aiResponse.data.answer;
+        } catch (error) {
+            console.error('AI Response error:', error.message);
+            if (error.response) {
+                console.error('Error response data:', JSON.stringify(error.response.data, null, 2));
+            }
+            throw error;
+        }
     }
 }
