@@ -36,7 +36,6 @@ export class QueryService {
                 userEmail: userEmail,
                 request: request
             };
-            console.log('Request payload:', requestBody);
 
             const aiResponse = await firstValueFrom(
                 this.httpService.post(
@@ -50,6 +49,7 @@ export class QueryService {
                     }
                 )
             );
+
             return aiResponse.data.answer;
         } catch (error) {
             console.error('AI Response error:', error.message);
