@@ -18,7 +18,6 @@ export class AuthService {
 
     async signUp(signUpDto: SignUpDto) : Promise<User> {
         const { name, email, password } = signUpDto;
-
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = this.userRepository.create({
@@ -51,8 +50,7 @@ export class AuthService {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
 
-        const token = this.jwtService.sign({ id: user.id });
-
+        const token = this.jwtService.sign({ id: user.id, email: user.email });
         return { token };
     }
 }

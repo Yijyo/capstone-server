@@ -17,8 +17,6 @@ export class QueryService {
 
     async createQuery(userEmail: string, request: string): Promise<Query> {
         try {
-            console.log("username : ", userEmail, ", requestMessage : ", request);
-            console.log(process.env.AI_SERVER_URL);
             const response = await this.getAIResponse(userEmail, request);
             const query = this.queryRepository.create({
                 userEmail: userEmail,
@@ -34,7 +32,6 @@ export class QueryService {
     private async getAIResponse(userEmail: string, request: string): Promise<string> {
         try {
             const url = process.env.AI_SERVER_URL + 'prompt';
-            console.log('Sending request to:', url);
             const requestBody = {
                 userEmail: userEmail,
                 request: request
@@ -53,7 +50,6 @@ export class QueryService {
                     }
                 )
             );
-            console.log('AI Response:', aiResponse);
             return aiResponse.data.answer;
         } catch (error) {
             console.error('AI Response error:', error.message);

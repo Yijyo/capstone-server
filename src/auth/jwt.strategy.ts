@@ -23,13 +23,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        const { email } = payload;
+        const { id } = payload;
         const user = await this.userRepository.findOne({
             where: {
-                email
+                id
             },
         });
-        if (!user) throw new Error(`User with email ${email} not found`);
+        if (!user) throw new Error(`User with id ${id} not found`);
         return user;
     }
 }
